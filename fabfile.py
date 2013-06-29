@@ -3,6 +3,7 @@ from fabric.api import env, run, cd, sudo, parallel
 from fabric.exceptions import CommandTimeout
 from utils import if_host_offline_ignore
 from settings import DEV_USER, OPENNMS_SRC, CLUSTER_HOSTS, OPENNMS_HOME, SHARED_HOME
+import os
 
 # Default to root
 env.user = 'root'
@@ -74,8 +75,8 @@ def predeploy():
     with cd(OPENNMS_HOME):
         run("mv etc etc.pristine")
         run("mv share share.pristine")
-        run("ln -sf %s etc" % shared_etc_dir)
-        run("ln -sf %s share" % shared_share_dir)
+        run("ln -sf %s/etc etc" % SHARED_HOME)
+        run("ln -sf %s/etc share" % SHARED_HOME)
         run("chown -R root:root *")
 
     with cd(OPENNMS_BIN):
