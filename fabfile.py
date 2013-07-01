@@ -28,6 +28,14 @@ def stop():
     with cd(OPENNMS_BIN):
         run("./opennms stop") 
 
+@parallel
+@if_host_offline_ignore
+def kill():
+    env.warn_only = True
+    with cd(OPENNMS_BIN):
+        run("./opennms stop") 
+        run("""kill -9 `ps ax | grep java | grep opennms | awk '{print $1;}'`""")
+
 @if_host_offline_ignore
 def status():
     env.warn_only = True
