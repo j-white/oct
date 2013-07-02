@@ -33,8 +33,8 @@ def stop():
 def kill():
     env.warn_only = True
     with cd(OPENNMS_BIN):
-        run("./opennms stop") 
-        run("""kill -9 `ps ax | grep java | grep opennms | awk '{print $1;}'`""")
+        run("./opennms kill") 
+        run("""kill -9 `ps ax | grep java | grep opennms | awk '{print $1;}'`""", shell=False)
 
 @if_host_offline_ignore
 def status():
