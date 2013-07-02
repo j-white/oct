@@ -97,7 +97,7 @@ def predeploy():
         run("mv etc etc.pristine")
         run("mv share share.pristine")
         run("ln -sf %s/etc etc" % SHARED_HOME)
-        run("ln -sf %s/etc share" % SHARED_HOME)
+        run("ln -sf %s/share share" % SHARED_HOME)
         run("chown -R root:root *")
 
     with cd(OPENNMS_BIN):
