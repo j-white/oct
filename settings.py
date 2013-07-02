@@ -5,6 +5,9 @@ DEV_USER = 'jwhite'
 # Where the source code is checked out, should be owned by DEV_USER
 OPENNMS_SRC = '/home/jwhite/rcs/opennms'
 
+# Hostname for the build server
+BUILD_HOST = 'onms-n0'
+
 # Hostnames for all of the cluster members
 CLUSTER_HOSTS = ['onms-n1', 'onms-n2', 'onms-n3']
 

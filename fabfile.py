@@ -2,11 +2,17 @@ from __future__ import with_statement
 from fabric.api import env, run, cd, sudo, parallel
 from fabric.exceptions import CommandTimeout
 from utils import if_host_offline_ignore
-from settings import DEV_USER, OPENNMS_SRC, CLUSTER_HOSTS, OPENNMS_HOME, SHARED_HOME
+from settings import DEV_USER, OPENNMS_SRC, BUILD_HOST, CLUSTER_HOSTS, OPENNMS_HOME, SHARED_HOME
 import os
 
 # Default to root
 env.user = 'root'
+
+# Default to the build host for particular tasks
+tasks_to_exec = set(env.tasks)
+tasks_for_build_host = set(['build', 'rebuild', 'predeploy'])
+if tasks_for_build_host.intersection(tasks_to_exec):
+    env.hosts = [BUILD_HOST]
 
 def cluster():
     env.hosts = CLUSTER_HOSTS
@@ -27,6 +33,13 @@ def stop():
     env.warn_only = True
     with cd(OPENNMS_BIN):
         run("./opennms stop") 
+
+@parallel
+@if_host_offline_ignore
+def restart():
+    env.warn_only = True
+    with cd(OPENNMS_BIN):
+        run("./opennms restart") 
 
 @parallel
 @if_host_offline_ignore
