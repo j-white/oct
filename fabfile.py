@@ -104,6 +104,10 @@ def predeploy():
         run("./runjava -s")
         run("./install -dis")
 
+def reload(daemon):
+    with cd(OPENNMS_BIN):
+        run("./send-event.pl -p 'daemonName %s' uei.opennms.org/internal/reloadDaemonConfig" % daemon)
+
 @parallel
 def deploy():
     opennms_home_parent = os.path.abspath(os.path.join(OPENNMS_HOME, '..'))
