@@ -48,7 +48,7 @@ def kill():
     env.warn_only = True
     with cd(OPENNMS_BIN):
         run("./opennms kill") 
-        run("""kill -9 `ps ax | grep java | grep opennms | awk '{print $1;}'`""", shell=False)
+        run("""kill -9 `ps ax | grep java | grep "opennms_bootstrap.jar" | awk '{print $1;}'`""", shell=False)
 
 @if_host_offline_ignore
 def status():
@@ -89,6 +89,10 @@ def build():
         run("./assemble.pl -Dopennms.home=" + OPENNMS_HOME)
 
 def predeploy():
+    if env.host != BUILD_HOST:
+        print "Skipping predeploy on %s" % env.host
+        return
+
     with cd(OPENNMS_SRC + "/target"):
         run("rm -rf " + OPENNMS_HOME)
         run("mkdir -p " + OPENNMS_HOME)
@@ -118,6 +122,10 @@ def reload(daemon):
 
 @parallel
 def deploy():
+    if env.host == BUILD_HOST:
+        print "Skipping deploy on %s" % env.host
+        return
+
     opennms_home_parent = os.path.abspath(os.path.join(OPENNMS_HOME, '..'))
     run("rsync -avr --delete %s:%s %s" % (BUILD_HOST, OPENNMS_HOME, opennms_home_parent))
 
