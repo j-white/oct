@@ -119,5 +119,5 @@ def reload(daemon):
 @parallel
 def deploy():
     opennms_home_parent = os.path.abspath(os.path.join(OPENNMS_HOME, '..'))
-    run("rsync -avr --delete n0:%s %s" % (OPENNMS_HOME, opennms_home_parent))
+    run("rsync -avr --delete %s:%s %s" % (BUILD_HOST, OPENNMS_HOME, opennms_home_parent))
 
