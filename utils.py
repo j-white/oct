@@ -1,6 +1,7 @@
 from fabric.api import env
 from paramiko import Transport
 from socket import getdefaulttimeout, setdefaulttimeout
+from settings import BUILD_HOST
 
 def if_host_offline_ignore(fn):
     def wrapped():
@@ -14,3 +15,18 @@ def if_host_offline_ignore(fn):
         setdefaulttimeout(original_timeout)
     return wrapped
 
+def only_run_on_build_server(fn):
+    def wrapped():
+        if env.host != BUILD_HOST:
+            print "Skipping %s on %s" % (env.command, env.host)
+            return
+        return fn()
+    return wrapped
+
+def skip_on_build_server(fn):
+    def wrapped():
+        if env.host == BUILD_HOST:
+            print "Skipping %s on %s" % (env.command, env.host)
+            return
+        return fn()
+    return wrapped

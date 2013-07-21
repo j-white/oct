@@ -2,7 +2,7 @@ from __future__ import with_statement
 from fabric.api import env, run, cd, sudo, parallel
 from fabric.exceptions import CommandTimeout
 from fabric.contrib import files
-from utils import if_host_offline_ignore
+from utils import if_host_offline_ignore, only_run_on_build_server, skip_on_build_server
 from settings import DEV_USER, OPENNMS_SRC, BUILD_HOST, CLUSTER_HOSTS, OPENNMS_HOME, SHARED_HOME
 import os
 
@@ -57,6 +57,11 @@ def status():
         run("./opennms -v status")
 
 @parallel
+def reload(daemon):
+    with cd(OPENNMS_BIN):
+        run("./send-event.pl -p 'daemonName %s' uei.opennms.org/internal/reloadDaemonConfig" % daemon)
+
+@parallel
 @if_host_offline_ignore
 def reboot():
     run("shutdown -r now")
@@ -73,6 +78,7 @@ def slap():
     except CommandTimeout as e:
         pass
 
+@only_run_on_build_server
 def rebuild():
     env.user = DEV_USER
     with cd(OPENNMS_SRC):
@@ -81,6 +87,7 @@ def rebuild():
         run("./compile.pl")
         run("./assemble.pl -Dopennms.home=" + OPENNMS_HOME)
 
+@only_run_on_build_server
 def build():
     env.user = DEV_USER
     with cd(OPENNMS_SRC):
@@ -88,11 +95,8 @@ def build():
         run("./compile.pl")
         run("./assemble.pl -Dopennms.home=" + OPENNMS_HOME)
 
+@only_run_on_build_server
 def predeploy():
-    if env.host != BUILD_HOST:
-        print "Skipping predeploy on %s" % env.host
-        return
-
     with cd(OPENNMS_SRC + "/target"):
         run("rm -rf " + OPENNMS_HOME)
         run("mkdir -p " + OPENNMS_HOME)
@@ -116,16 +120,9 @@ def install():
         run("./runjava -s")
         run("./install -dis")
 
-def reload(daemon):
-    with cd(OPENNMS_BIN):
-        run("./send-event.pl -p 'daemonName %s' uei.opennms.org/internal/reloadDaemonConfig" % daemon)
-
 @parallel
+@skip_on_build_server
 def deploy():
-    if env.host == BUILD_HOST:
-        print "Skipping deploy on %s" % env.host
-        return
-
     opennms_home_parent = os.path.abspath(os.path.join(OPENNMS_HOME, '..'))
     run("rsync -avr --delete %s:%s %s" % (BUILD_HOST, OPENNMS_HOME, opennms_home_parent))
 
