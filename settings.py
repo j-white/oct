@@ -6,13 +6,13 @@ DEV_USER = 'jwhite'
 OPENNMS_SRC = '/home/jwhite/rcs/opennms'
 
 # Hostname for the build server
-BUILD_HOST = 'onms-n0'
+BUILD_HOST = 'cyclone'
 
 # Hostnames for all of the cluster members
-CLUSTER_HOSTS = ['onms-n1', 'onms-n2', 'onms-n3']
+CLUSTER_HOSTS = ['cyclone', 'n1', 'n2']
 
 # Where OpenNMS lives locally on the cluster members
 OPENNMS_HOME = '/opt/opennms'
 
 # Where the shared data is stored
-SHARED_HOME = '/mnt/cephfs/opennms'
+SHARED_HOME = '/mnt/nfs/opennms'

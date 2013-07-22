@@ -1,4 +1,4 @@
-opennms-cluster-tools
+OpenNMS Cluster Tools (OCT)
 =====================
 
-Tools for building and managing a cluster of OpenNMS instances.
+Fabric scripts for building and managing a cluster of OpenNMS instances.
